@@ -1,0 +1,17 @@
+{
+  "name": "backend-irc",
+  "version": "1.0.0",
+  "description": "backend du projet IRC",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js"
+  },
+  "author": "fabien bounoir / cameron debliquy",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.8.1",
+    "socket.io": "^2.3.0"
+  }
+}
