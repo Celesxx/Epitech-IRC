@@ -22,8 +22,7 @@ class App extends React.Component {
     this.state = 
     {
       chat: [],
-      content: '',
-      name: '',
+      content: '/nick ',
     };
   }
 
@@ -107,14 +106,22 @@ class App extends React.Component {
   {
     if(this.state.content.indexOf("/nick ") == 0)
     {
-      nick = true
-      username = this.state.content.slice(6)
-
-      // envoie le message au server
-      this.socket.emit('add user', username);
-
-      this.displayMessage(username,this.state.content,'')
-      return true
+      if(/^[a-zA-Z0-9]+([a-zA-Z0-9](_|-)[a-zA-Z0-9])*[a-zA-Z0-9]+$/.test(this.state.content.slice(6)))
+      {
+        nick = true
+        username = this.state.content.slice(6)
+  
+        // envoie le message au server
+        this.socket.emit('add user', username);
+  
+        this.displayMessage(username,this.state.content,'')
+        return true
+      }
+      else
+      {
+        this.displayMessage("Erreur","Le nom d'utilisateur n'est pas valide",'/nick ')
+        return true
+      }
     }
     else if(this.state.content.indexOf("/create ") == 0 && nick )
     {
@@ -194,10 +201,12 @@ class App extends React.Component {
     }, this.scrollToBottom);
   }
 
-  // Always make sure the window is scrolled down to the last message.
+  // scroll le chat tout en bas
   scrollToBottom() {
     const chat = document.getElementById('chat');
-    chat.scrollTop = chat.scrollHeight;
+    // chat.scrollTop = chat.scrollHeight;
+    console.log(chat.scrollHeight)
+    chat.scrollTo(0,(chat.scrollHeight+1000));
   }
 
   render() {
@@ -212,12 +221,24 @@ class App extends React.Component {
             {this.state.chat.map((el, index) => {
               return (
                 <div key={index}>
-                  <Typography variant="caption" className="name">
+                  <Typography variant="body2" className="name">
                     {el.name}
                   </Typography>
-                  <Typography variant="body1" className="content">
+                  {el.content.indexOf("/img ") == 0 || el.content.indexOf("/video ") == 0 ? (
+                    el.content.indexOf("/img ") == 0? (
+                      <Typography variant="body1" className="content">
+                      <a href={el.content.slice(5)} ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red"}} ></img></a>
+                      </Typography>
+                    ) : (
+                      <Typography variant="body1" className="content">
+                      <video id="videoChat" controls="" autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red"}} ></source></video>
+                      </Typography>
+                    )
+                  ) : (
+                    <Typography variant="body1" className="content">
                     {el.content}
                   </Typography>
+                  )}
                 </div>
               );
             })}
@@ -234,5 +255,6 @@ class App extends React.Component {
     );
   }
 };
+
 
 export default App;
