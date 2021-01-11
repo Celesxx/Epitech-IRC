@@ -225,7 +225,7 @@ class App extends React.Component {
                     {el.name}
                   </Typography>
                   {el.content.indexOf("/img ") == 0 || el.content.indexOf("/video ") == 0 ? (
-                    el.content.indexOf("/img ") == 0? (
+                    el.content.indexOf("/img ") == 0 ? (
                       <Typography variant="body1" className="content">
                       <a href={el.content.slice(5)} ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red"}} ></img></a>
                       </Typography>
@@ -235,9 +235,15 @@ class App extends React.Component {
                       </Typography>
                     )
                   ) : (
-                    <Typography variant="body1" className="content">
-                    {el.content}
-                  </Typography>
+                      (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(el.content)) ? (
+                        <Typography variant="body1" className="content">
+                          <a href={el.content} style={{color:"#1a0dab"}}> {el.content}</a>
+                        </Typography>
+                      ) : (
+                        <Typography variant="body1" className="content">
+                          {el.content}
+                        </Typography>
+                      )
                   )}
                 </div>
               );
