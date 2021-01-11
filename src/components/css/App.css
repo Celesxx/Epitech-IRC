@@ -30,3 +30,66 @@
 .content {
   margin-bottom: 8px;
 }
+
+#imageChat{
+  width: 60vh;
+}
+
+#videoChat{
+  width: 60vh;
+}
+
+@media only screen and (max-device-width:680px) {
+  #imageChat{
+    width: 50vh;
+  }
+  
+  #videoChat{
+    width: 50vh;
+  }
+
+  .App
+  {
+    display: grid;
+    /* grid-template-rows: 0.5fr 2fr 0.5fr; */
+    grid-template-columns: 0.3fr 2fr 0.1fr;
+  }
+
+}
+
+@media only screen and (max-device-width:525px) {
+  #imageChat{
+    width: 30vh;
+  }
+  
+  #videoChat{
+    width: 30vh;
+  }
+
+  .App
+  {
+    display: grid;
+    /* grid-template-rows: 0.5fr 2fr 0.5fr; */
+    grid-template-columns: 0.4fr 2fr 0.1fr;
+  }
+
+}
+
+
+@media only screen and (max-device-width:410px) {
+  #imageChat{
+    width: 30vh;
+  }
+  
+  #videoChat{
+    width: 30vh;
+  }
+
+  .App
+  {
+    display: grid;
+    /* grid-template-rows: 0.5fr 2fr 0.5fr; */
+    grid-template-columns: 0.5fr 2fr 0.1fr;
+  }
+
+}
