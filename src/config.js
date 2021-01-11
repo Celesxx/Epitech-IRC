@@ -5,6 +5,6 @@ export default {
     endpoint: pkg.proxy
   },
   production: {
-    endpoint: window.location.hostname
+    endpoint: pkg.proxy
   }
 }
