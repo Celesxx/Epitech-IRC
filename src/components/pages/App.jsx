@@ -88,13 +88,20 @@ class App extends React.Component {
     }
     else if(nick)
     {  
-      // envoie le message au server
-      this.socket.emit(channel, {
-        name: username,
-        content: this.state.content,
-      });
+      if(!(/^(^$)|(\s+$)/.test(this.state.content)))
+      {
+        // envoie le message au server
+        this.socket.emit(channel, {
+          name: username,
+          content: this.state.content,
+        });
 
-      this.displayMessage(username,this.state.content,'')
+        this.displayMessage(username,this.state.content,'')
+      }
+      else
+      {
+        this.displayMessage('','',this.state.content)
+      }
     }
     else
     {
@@ -227,17 +234,17 @@ class App extends React.Component {
                   {el.content.indexOf("/img ") == 0 || el.content.indexOf("/video ") == 0 ? (
                     el.content.indexOf("/img ") == 0 ? (
                       <Typography variant="body1" className="content">
-                      <a href={el.content.slice(5)} ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red"}} ></img></a>
+                      <a href={el.content.slice(5)} target = "_blank" ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red"}} ></img></a>
                       </Typography>
                     ) : (
                       <Typography variant="body1" className="content">
-                      <video id="videoChat" controls="" autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red"}} ></source></video>
+                      <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red"}} ></source></video>
                       </Typography>
                     )
                   ) : (
                       (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(el.content)) ? (
                         <Typography variant="body1" className="content">
-                          <a href={el.content} style={{color:"#1a0dab"}}> {el.content}</a>
+                          <a href={el.content} style={{color:"#1a0dab"}} target = "_blank" > {el.content}</a>
                         </Typography>
                       ) : (
                         <Typography variant="body1" className="content">
