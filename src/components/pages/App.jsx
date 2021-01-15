@@ -14,6 +14,12 @@ var username;
 var channel = "general"
 var allChannel = ""
 
+//pour le typing
+var name = ""
+var lastTypingTime;
+var isTyping = false;
+var TYPING_TIMER_LENGTH = 1500; // ms
+
 class App extends React.Component {
   constructor(props) 
   {
@@ -66,6 +72,18 @@ class App extends React.Component {
       allChannel = msg;
     });
 
+      // Whenever the server emits 'typing', show the typing message
+    this.socket.on('typing', (data) => {
+      // console.log("il tape sur le clavier")
+      var typing = document.getElementsByClassName("typing")[0]
+      typing.innerText = data.username + " est en train d'écrire...";
+    });
+
+    // Whenever the server emits 'stop typing', kill the typing message
+    this.socket.on('stop typing', (data) => {
+      var typing = document.getElementsByClassName("typing")[0]
+      typing.innerText = "";
+    });
   }
 
   // save le message entrain d'être taper dans l'input
@@ -75,7 +93,8 @@ class App extends React.Component {
       {
         content: event.target.value,
       });
-      // console.log("en train de taper")
+
+      this.updateTyping();
   }
 
   handleSubmit(event) 
@@ -106,6 +125,27 @@ class App extends React.Component {
     else
     {
       this.displayMessage("Erreur","identifiez vous avec /nick <pseudo> pour pouvoir parler",'/nick ')
+    }
+  }
+
+  // Updates the typing event
+  updateTyping = () => {
+    if (nick) {
+      if (!this.typing) {
+        this.socket.emit('typing');
+        isTyping = true;
+      }
+      lastTypingTime = (new Date()).getTime();
+
+      setTimeout(() => {
+        var typingTimer = (new Date()).getTime();
+        var timeDiff = typingTimer - lastTypingTime;
+
+        if (timeDiff >= TYPING_TIMER_LENGTH) {
+          this.socket.emit('stop typing');
+          isTyping = false;
+        }
+      }, TYPING_TIMER_LENGTH);
     }
   }
 
@@ -234,11 +274,11 @@ class App extends React.Component {
                   {el.content.indexOf("/img ") == 0 || el.content.indexOf("/video ") == 0 ? (
                     el.content.indexOf("/img ") == 0 ? (
                       <Typography variant="body1" className="content">
-                      <a href={el.content.slice(5)} target = "_blank" ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red"}} ></img></a>
+                      <a href={el.content.slice(5)} target = "_blank" ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red", borderRadius:"2%"}} ></img></a>
                       </Typography>
                     ) : (
                       <Typography variant="body1" className="content">
-                      <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red"}} ></source></video>
+                      <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red", borderRadius:"2%"}} ></source></video>
                       </Typography>
                     )
                   ) : (
@@ -262,6 +302,7 @@ class App extends React.Component {
             handleContent={this.handleContent.bind(this)}
             handleSubmit={this.handleSubmit.bind(this)}
             name={username}
+            typing={name}
           />
           
       </div>
