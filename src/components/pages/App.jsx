@@ -75,14 +75,55 @@ class App extends React.Component {
       // Whenever the server emits 'typing', show the typing message
     this.socket.on('typing', (data) => {
       // console.log("il tape sur le clavier")
-      var typing = document.getElementsByClassName("typing")[0]
-      typing.innerText = data.username + " est en train d'écrire...";
+      console.log(data)
+
+      if(data.username.length != 0)
+      {
+        let message = ""
+
+        for (let i = 0; i < data.username.length; i++) {
+            console.log(data.username[i]);
+            message += data.username[i] + ", "
+        }
+        message = message.substring(0, message.length - 2) + " "
+        message += data.username.length > 1 ? ("sont en train d'ecrire...") : ("est en train d'ecrire...")
+        let typing = document.getElementsByClassName("typing")[0]
+        typing.innerText = message;
+      }
+      else
+      {
+        let typing = document.getElementsByClassName("typing")[0]
+        typing.innerText = "";
+      }
+
     });
 
     // Whenever the server emits 'stop typing', kill the typing message
     this.socket.on('stop typing', (data) => {
-      var typing = document.getElementsByClassName("typing")[0]
-      typing.innerText = "";
+      console.log(data)
+      // let typing = document.getElementsByClassName("typing")[0]
+      // typing.innerText = "";
+
+      if(data.username.length != 0)
+      {
+        let message = ""
+
+        for (let i = 0; i < data.username.length; i++) {
+            console.log(data.username[i]);
+            message += data.username[i] + ", "
+        }
+  
+        message = message.substring(0, message.length - 2) + " "
+        message += data.username.length > 1 ? ("sont en train d'ecrire...") : ("est en train d'ecrire...")
+        let typing = document.getElementsByClassName("typing")[0]
+        typing.innerText = message;
+      }
+      else
+      {
+        var typing = document.getElementsByClassName("typing")[0]
+        typing.innerText = "";
+      }
+
     });
   }
 
