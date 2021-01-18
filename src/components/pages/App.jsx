@@ -14,6 +14,9 @@ var username;
 var channel = "general"
 var allChannel = ""
 
+//audio
+var notif = new Audio('https://www.myinstants.com/media/sounds/discord-notification.mp3');
+
 //pour le typing
 var name = ""
 var lastTypingTime;
@@ -55,13 +58,16 @@ class App extends React.Component {
     // update le chat si un autre message est écrit
     this.socket.on(channel+'-callback', (msg) => 
     {
-
       this.setState((state) => 
       ({
         chat: [...state.chat, msg],
       }), 
       this.scrollToBottom);
-
+      if(msg.content.indexOf("@" + username) !== -1 || msg.content.indexOf("@everyone") !== -1 )
+      {
+        
+        notif.play()
+      }
     });
 
     // reception des channels disponibles
@@ -327,10 +333,36 @@ class App extends React.Component {
                         <Typography variant="body1" className="content">
                           <a href={el.content} style={{color:"#1a0dab"}} target = "_blank" > {el.content}</a>
                         </Typography>
+                      ) : (el.content.indexOf("@" + username) !== -1 || el.content.indexOf("@everyone") !== -1  ? (
+                          (() => {
+                            let text = []
+                            let chaine = " " + el.content
+                            const words = chaine.split('@');
+                            const finPhrase = words[1].split(' ')  //finPhrase[1]
+                            let restePhrase = ""
+                            for(let i = 1; i < finPhrase.length; i++)
+                            {
+                              restePhrase += " " + finPhrase[i]
+                            }
+
+                            text.push(
+                            
+                              <Typography variant="body1" className="content" >
+                              {words[0]}
+                              <strong style={{color:"#6e84d1", background:"#BECCFF", padding:"3px", borderRadius: "4px"}}>@{finPhrase[0]}</strong>
+                              {restePhrase}
+                              </Typography>
+                            
+                            );
+
+                            return text;
+                          })()
+                      
                       ) : (
                         <Typography variant="body1" className="content">
                           {el.content}
                         </Typography>
+                      )
                       )
                   )}
                 </div>
