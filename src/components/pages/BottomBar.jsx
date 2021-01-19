@@ -41,47 +41,10 @@ const useDefaultStyles = makeStyles(theme => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 7),
-    // transition: theme.transitions.create('width'),
     width: '100%',
-    // [theme.breakpoints.up('sm')]: {
-    //   width: 120,
-    //   '&:focus': {
-    //     width: 200,
-    //   },
-    // },
   },
 }));
 
-export const lightTheme = {
-  body: '#FFF',
-  text: '#363537',
-  toggleBorder: '#FFF',
-  background: '#363537',
-}
-
-export const darkTheme = {
-  body: '#363537',
-  text: '#FAFAFA',
-  toggleBorder: '#6B8096',
-  background: '#999',
-}
-
-function ChangeTheme()
-{
-  // if(darktheme)
-  // {
-  //   darktheme = false
-  // }
-  // else
-  // {
-  //   darktheme = true
-  // }
-  // var element = document.body;
-  // // element.classList.toggle("name-dark");
-  // // element.style.toggle("background-color: #202225;")
-
-  console.log("theme")
-}
 
 export default function BottomBar(props) {
   const classes = useDefaultStyles();

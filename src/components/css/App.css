@@ -136,3 +136,33 @@
   color: #b9bbbe;
 }
 
+.rainbowEasterEgg{
+  background-color: #FF0000;
+  animation: RGBWhiteMode 5s infinite linear;
+}
+@keyframes RGBWhiteMode {
+  12.5% {
+    background-color: #B03A2E;
+    }
+    25% {
+    background-color: #AF601A;
+    }
+    37.5% {
+    background-color: #B7950B;
+    }
+    50% {
+    background-color: #239B56;
+    }
+    62.5% {
+    background-color: #2874A6;
+    }
+    75% {
+    background-color: #1F618D;
+    }
+    87.5% {
+    background-color: #6C3483;
+    }
+    100% {
+    background-color: #95007C;
+    }
+}

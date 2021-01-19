@@ -15,7 +15,7 @@ var channel = "general"
 var allChannel = ""
 
 //audio
-var notif = new Audio('https://www.myinstants.com/media/sounds/discord-notification.mp3');
+var notif = new Audio('https://www.myinstants.com/media/sounds/msn-sound_HSi9ogM.mp3');
 
 //pour le typing
 var name = ""
@@ -65,7 +65,6 @@ class App extends React.Component {
       this.scrollToBottom);
       if(msg.content.indexOf("@" + username) !== -1 || msg.content.indexOf("@everyone") !== -1 )
       {
-        
         notif.play()
       }
     });
@@ -107,8 +106,6 @@ class App extends React.Component {
     // Whenever the server emits 'stop typing', kill the typing message
     this.socket.on('stop typing', (data) => {
       console.log(data)
-      // let typing = document.getElementsByClassName("typing")[0]
-      // typing.innerText = "";
 
       if(data.username.length != 0)
       {
@@ -251,10 +248,26 @@ class App extends React.Component {
       channel = "general"
       return true
     }
+    else if(this.state.content = "jeb_")
+    {
+      this.rainbowEasterEgg()
+    }
     else
     {
       return false
     }
+  }
+
+  ///easter egg fessant reference a Jeb (devellopeur minecraft)
+  rainbowEasterEgg()
+  {
+    var leftBar = document.getElementsByClassName("menu")[0]
+    var bottomBar = document.getElementsByTagName("header")[0]
+    var fondChat = document.getElementById("chat")
+    console.log(fondChat)
+    leftBar.classList.toggle("rainbowEasterEgg");
+    bottomBar.classList.toggle("rainbowEasterEgg");
+    fondChat.classList.toggle("rainbowEasterEgg");
   }
 
   channelExist()

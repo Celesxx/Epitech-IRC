@@ -3,13 +3,11 @@ import React from "react";
 import '../css/navbar.css';
 import { Link } from "react-router-dom";
 
-// function index() 
 let NavBar
 export default NavBar = ({channel,channelActuel}) => {
 
   // render ()
   {
-    console.log(channel)
     return(
 
       <div>
