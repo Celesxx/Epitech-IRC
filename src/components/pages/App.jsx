@@ -248,9 +248,11 @@ class App extends React.Component {
       channel = "general"
       return true
     }
-    else if(this.state.content = "jeb_")
+    else if(this.state.content == "jeb_")
     {
       this.rainbowEasterEgg()
+      this.displayMessage("easter Egg","la rainbow c'est beau",'')
+      return true
     }
     else
     {
