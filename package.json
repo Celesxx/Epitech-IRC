@@ -43,5 +43,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://irc-chat.osc-fr1.scalingo.io/"
+  "proxy": "https://socket-irc-backend.herokuapp.com/"
 }
