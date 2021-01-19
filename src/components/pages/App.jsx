@@ -42,8 +42,6 @@ class App extends React.Component {
     // Lis les x derniers messages 
     this.socket.on('init', (msg, channelList) => 
     {
-      console.log(channelList)
-      channel = channelList[0]
       allChannel = channelList
 
       let msgReversed = msg.reverse();
@@ -56,7 +54,7 @@ class App extends React.Component {
 
 
     // update le chat si un autre message est écrit
-    this.socket.on(channel+'-callback', (msg) => 
+    this.socket.on('general-callback', (msg) => 
     {
       this.setState((state) => 
       ({
@@ -72,22 +70,16 @@ class App extends React.Component {
     // reception des channels disponibles
     this.socket.on('channel', (msg) => 
     {
-      console.log("nouveau channel disponible:")
-      console.log(msg)
       allChannel = msg;
     });
 
-      // Whenever the server emits 'typing', show the typing message
     this.socket.on('typing', (data) => {
-      // console.log("il tape sur le clavier")
-      console.log(data)
 
       if(data.username.length != 0)
       {
         let message = ""
 
         for (let i = 0; i < data.username.length; i++) {
-            console.log(data.username[i]);
             message += data.username[i] + ", "
         }
         message = message.substring(0, message.length - 2) + " "
@@ -105,14 +97,12 @@ class App extends React.Component {
 
     // Whenever the server emits 'stop typing', kill the typing message
     this.socket.on('stop typing', (data) => {
-      console.log(data)
 
       if(data.username.length != 0)
       {
         let message = ""
 
         for (let i = 0; i < data.username.length; i++) {
-            console.log(data.username[i]);
             message += data.username[i] + ", "
         }
   
@@ -147,14 +137,14 @@ class App extends React.Component {
     event.preventDefault();
     if(this.isCommand(this.socket))
     {
-      console.log("commande taper")
+
     }
     else if(nick)
     {  
       if(!(/^(^$)|(\s+$)/.test(this.state.content)))
       {
         // envoie le message au server
-        this.socket.emit(channel, {
+        this.socket.emit("general", {
           name: username,
           content: this.state.content,
         });
@@ -175,7 +165,7 @@ class App extends React.Component {
   // Updates the typing event
   updateTyping = () => {
     if (nick) {
-      if (!this.typing) {
+      if (!(this.typing) && channel === "general") {
         this.socket.emit('typing');
         isTyping = true;
       }
@@ -195,7 +185,7 @@ class App extends React.Component {
 
   isCommand(socket)
   {
-    if(this.state.content.indexOf("/nick ") == 0)
+    if(this.state.content.indexOf("/nick ") === 0)
     {
       if(/^[a-zA-Z0-9]+([a-zA-Z0-9](_|-)[a-zA-Z0-9])*[a-zA-Z0-9]+$/.test(this.state.content.slice(6)))
       {
@@ -214,7 +204,7 @@ class App extends React.Component {
         return true
       }
     }
-    else if(this.state.content.indexOf("/create ") == 0 && nick )
+    else if(this.state.content.indexOf("/create ") === 0 && nick )
     {
       console.log("new channel: " + this.state.content.slice(8))
 
@@ -232,23 +222,20 @@ class App extends React.Component {
 
       return true
     }
-    else if(this.state.content.indexOf("/join ") == 0 && nick )
+    else if(this.state.content.indexOf("/join ") === 0 && nick )
     {
-      console.log("join channel")
-
       this.channelExist(this.state.content.slice(6))
       return true
     }
-    else if(this.state.content.indexOf("/quit ") == 0 && nick)
+    else if(this.state.content.indexOf("/quit ") === 0 && nick)
     {
-      console.log("quit channel")
-
       this.displayMessage(username,this.state.content,'')
-
+      
       channel = "general"
+      this.socket.emit('general', {content:this.state.content });
       return true
     }
-    else if(this.state.content == "jeb_")
+    else if(this.state.content === "jeb_")
     {
       this.rainbowEasterEgg()
       this.displayMessage("easter Egg","la rainbow c'est beau",'')
@@ -276,10 +263,16 @@ class App extends React.Component {
   {
     if(allChannel.includes(this.state.content.slice(6)))
     {
-      console.log("channel exist")
       channel = this.state.content.slice(6)
-
+      this.setState((state) => 
+      ({
+        chat: [..."", ...""],
+      }), 
+      this.scrollToBottom);
       this.displayMessage(username,this.state.content,'')
+
+      // envoie la commande au serveur
+      this.socket.emit('general', {content:this.state.content });
     }
     else
     {
@@ -287,13 +280,6 @@ class App extends React.Component {
     
       this.displayMessage("Erreur","le channel spécifié n'existe pas",'')
     }
-  }
-
-  joinChannel(joinChannel)
-  {
-    console.log("join: " + joinChannel)
-
-    
   }
 
   displayMessage(titre, message, searchBar)
@@ -314,7 +300,6 @@ class App extends React.Component {
   scrollToBottom() {
     const chat = document.getElementById('chat');
     // chat.scrollTop = chat.scrollHeight;
-    console.log(chat.scrollHeight)
     chat.scrollTo(0,(chat.scrollHeight+1000));
   }
 
@@ -333,8 +318,8 @@ class App extends React.Component {
                   <Typography variant="body2" className="name">
                     {el.name}
                   </Typography>
-                  {el.content.indexOf("/img ") == 0 || el.content.indexOf("/video ") == 0 ? (
-                    el.content.indexOf("/img ") == 0 ? (
+                  {el.content.indexOf("/img ") === 0 || el.content.indexOf("/video ") === 0 ? (
+                    el.content.indexOf("/img ") === 0 ? (
                       <Typography variant="body1" className="content">
                       <a href={el.content.slice(5)} target = "_blank" ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red", borderRadius:"2%"}} ></img></a>
                       </Typography>
@@ -352,7 +337,7 @@ class App extends React.Component {
                           (() => {
                             let text = []
                             let chaine = " " + el.content
-                            const words = chaine.split('@');
+                            const words = chaine.split(el.content.indexOf("@" + username) !== -1 ? ("@" + username) : ("@everyone"));
                             const finPhrase = words[1].split(' ')  //finPhrase[1]
                             let restePhrase = ""
                             for(let i = 1; i < finPhrase.length; i++)
@@ -364,7 +349,7 @@ class App extends React.Component {
                             
                               <Typography variant="body1" className="content" >
                               {words[0]}
-                              <strong style={{color:"#6e84d1", background:"#BECCFF", padding:"3px", borderRadius: "4px"}}>@{finPhrase[0]}</strong>
+                              <strong style={{color:"#6e84d1", background:"#BECCFF", padding:"3px", borderRadius: "4px"}}>{el.content.indexOf("@" + username) !== -1 ? ("@" + username) : ("@everyone")}</strong>
                               {restePhrase}
                               </Typography>
                             
