@@ -11,8 +11,8 @@ import '../css/App.css';
 
 var nick = false;
 var username;
-var channel = "general"
-var allChannel = ""
+var channel = "..."
+// var allChannel = ""
 
 //audio
 var notif = new Audio('https://www.myinstants.com/media/sounds/msn-sound_HSi9ogM.mp3');
@@ -23,6 +23,10 @@ var lastTypingTime;
 var isTyping = false;
 var TYPING_TIMER_LENGTH = 1500; // ms
 
+//sauvegarder commande tapé
+var commande = []
+var positionCommande = 0 
+
 class App extends React.Component {
   constructor(props) 
   {
@@ -30,8 +34,13 @@ class App extends React.Component {
 
     this.state = 
     {
-      chat: [],
+      chat: [{name: "Bienvenue sur socket.cpp :" , content: "Identifiez-vous avec le /nick <pseudo> pour pouvoir commencer à discuter" }, {name: "", content: "/img https://media.discordapp.net/attachments/766406481263591425/803189274647592960/logoBienvenue.png" }],
       content: '/nick ',
+    };
+
+    this.stateChannel = 
+    {
+      listChannel: []
     };
   }
 
@@ -42,7 +51,12 @@ class App extends React.Component {
     // Lis les x derniers messages 
     this.socket.on('init', (msg, channelList) => 
     {
-      allChannel = channelList
+      // allChannel = channelList
+
+      this.setState((stateChannel) => 
+      ({
+        listChannel: channelList
+      }))
 
       let msgReversed = msg.reverse();
       this.setState((state) => 
@@ -70,7 +84,13 @@ class App extends React.Component {
     // reception des channels disponibles
     this.socket.on('channel', (msg) => 
     {
-      allChannel = msg;
+      // allChannel = msg;
+
+      this.setState((stateChannel) => 
+      ({
+        listChannel: msg
+      }))
+
     });
 
     this.socket.on('typing', (data) => {
@@ -118,11 +138,33 @@ class App extends React.Component {
       }
 
     });
-  }
+
+    window.addEventListener('keydown', function (event)
+    {
+      let key = event.key;
+
+      //teste l'input realisé
+      if(key === "ArrowUp" && nick)
+      {
+        let input = document.getElementsByClassName("MuiInputBase-input")[0]
+        input.value = commande[positionCommande];
+        positionCommande <= 0 ? (positionCommande = 0) : (positionCommande--)
+      }
+      else if(key === "ArrowDown" && nick)
+      {
+        positionCommande >= commande.length - 1 ? (positionCommande = commande.length - 1) : (positionCommande++)
+        let input = document.getElementsByClassName("MuiInputBase-input")[0]
+        input.value = commande[positionCommande];
+      }
+    
+    });
+  } 
 
   // save le message entrain d'être taper dans l'input
   handleContent(event) 
   {
+    positionCommande = commande.length - 1 //actualise la taille du tableau
+    
       this.setState(
       {
         content: event.target.value,
@@ -135,6 +177,10 @@ class App extends React.Component {
   {
     // préviens le form du changement
     event.preventDefault();
+
+    commande.push(this.state.content);
+    positionCommande = commande.length - 1
+
     if(this.isCommand(this.socket))
     {
 
@@ -191,6 +237,7 @@ class App extends React.Component {
       {
         nick = true
         username = this.state.content.slice(6)
+        channel = "general"
   
         // envoie le message au server
         this.socket.emit('add user', username);
@@ -206,9 +253,7 @@ class App extends React.Component {
     }
     else if(this.state.content.indexOf("/create ") === 0 && nick )
     {
-      console.log("new channel: " + this.state.content.slice(8))
-
-      if(allChannel.includes(this.state.content.slice(8)))
+      if(this.state.listChannel.includes(this.state.content.slice(8)))
       {
         this.displayMessage("Creation Impossible","le channel "+ this.state.content.slice(8) +" existe déjà",'/create ')
       }
@@ -222,9 +267,45 @@ class App extends React.Component {
 
       return true
     }
+    else if(this.state.content.indexOf("/delete ") === 0 && nick )
+    {
+      if(this.state.listChannel.includes(this.state.content.slice(8)))
+      {
+        if(channel == this.state.content.slice(8))
+        {
+          channel = "general"
+          this.socket.emit('general', {content:"/quit " + this.state.content.slice(8) });
+          return true
+        }
+        else if(this.state.content.slice(8) == "general")
+        {
+          //Ecrit la commande dans le tchat
+          this.displayMessage("Information","Impossible de supprimer le channel general",'/delete ')
+          return true
+        }
+        else
+        {
+            //Ecrit la commande dans le tchat
+            this.displayMessage(username,this.state.content,'')
+            // envoie le message au server
+            this.socket.emit('general', {content:this.state.content });
+            return true
+        }
+      }
+      else
+      {
+        this.displayMessage("Supression Impossible","le channel "+ this.state.content.slice(8) +" n'existe pas",'/delete ')
+        return true
+      }
+    }
     else if(this.state.content.indexOf("/join ") === 0 && nick )
     {
       this.channelExist(this.state.content.slice(6))
+      return true
+    }
+    else if(this.state.content.indexOf("/clear") === 0 && nick )
+    {
+      this.clearMessage()
       return true
     }
     else if(this.state.content.indexOf("/quit ") === 0 && nick)
@@ -253,7 +334,7 @@ class App extends React.Component {
     var leftBar = document.getElementsByClassName("menu")[0]
     var bottomBar = document.getElementsByTagName("header")[0]
     var fondChat = document.getElementById("chat")
-    console.log(fondChat)
+
     leftBar.classList.toggle("rainbowEasterEgg");
     bottomBar.classList.toggle("rainbowEasterEgg");
     fondChat.classList.toggle("rainbowEasterEgg");
@@ -261,12 +342,13 @@ class App extends React.Component {
 
   channelExist()
   {
-    if(allChannel.includes(this.state.content.slice(6)))
+    if(this.state.listChannel.includes(this.state.content.slice(6)))
     {
       channel = this.state.content.slice(6)
       this.setState((state) => 
       ({
-        chat: [..."", ...""],
+        chat: [],
+        content: '',
       }), 
       this.scrollToBottom);
       this.displayMessage(username,this.state.content,'')
@@ -275,11 +357,19 @@ class App extends React.Component {
       this.socket.emit('general', {content:this.state.content });
     }
     else
-    {
-      console.log("ce channel n'existe pas !")
-    
+    {    
       this.displayMessage("Erreur","le channel spécifié n'existe pas",'')
     }
+  }
+
+  clearMessage()
+  {
+    this.setState((state) => 
+      ({
+        chat: [{name:"",content:"Clear effectué avec succès"}],
+        content: '',
+      }), 
+      this.scrollToBottom);
   }
 
   displayMessage(titre, message, searchBar)
@@ -296,6 +386,7 @@ class App extends React.Component {
     }, this.scrollToBottom);
   }
 
+
   // scroll le chat tout en bas
   scrollToBottom() {
     const chat = document.getElementById('chat');
@@ -307,7 +398,7 @@ class App extends React.Component {
     return (
       <div className="App">
 
-        <NavBar channel={allChannel} channelActuel={channel} className="navbar"></NavBar>
+        <NavBar channel={this.state.listChannel} channelActuel={channel} className="navbar"></NavBar>
 
         <div className="chatInterface">
 
@@ -315,9 +406,11 @@ class App extends React.Component {
             {this.state.chat.map((el, index) => {
               return (
                 <div key={index}>
+                  {el.name != "" ? (
                   <Typography variant="body2" className="name">
                     {el.name}
                   </Typography>
+                  ): ("")}
                   {el.content.indexOf("/img ") === 0 || el.content.indexOf("/video ") === 0 ? (
                     el.content.indexOf("/img ") === 0 ? (
                       <Typography variant="body1" className="content">
@@ -359,9 +452,11 @@ class App extends React.Component {
                           })()
                       
                       ) : (
+                        el.content != "" ? (
                         <Typography variant="body1" className="content">
                           {el.content}
                         </Typography>
+                        ) : ("")
                       )
                       )
                   )}
@@ -382,6 +477,5 @@ class App extends React.Component {
     );
   }
 };
-
 
 export default App;

@@ -141,7 +141,10 @@
   animation: RGBWhiteMode 5s infinite linear;
 }
 @keyframes RGBWhiteMode {
-  12.5% {
+    0% {
+    background-color: #FF0000;
+    }  
+    12.5% {
     background-color: #B03A2E;
     }
     25% {

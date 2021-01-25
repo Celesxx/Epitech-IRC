@@ -7,9 +7,10 @@ let NavBar
 export default NavBar = ({channel,channelActuel}) => {
 
   // render ()
+  console.log(channel)
   {
     return(
-
+      channel != null ? (
       <div>
         <div class="area"></div>
         <nav class="menu">
@@ -36,6 +37,7 @@ export default NavBar = ({channel,channelActuel}) => {
                 </ul>
             </nav>
       </div>
+      ) : ("")
     )
 
   }
