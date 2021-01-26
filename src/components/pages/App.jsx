@@ -146,8 +146,6 @@ class App extends React.Component {
     {
       let key = event.key;
 
-      console.log(key)
-
       //teste l'input realisé
       if(key === "ArrowUp" && nick)
       {
