@@ -14,7 +14,7 @@ import ReactPlayer from 'react-player'
 var nick = false;
 var username;
 var channel = "..."
-var allCommand = ["/img ", "/video " , "/help" , "/list" , "/create ", "/join " , "/quit " , "/delete " , "/users" , "/msg " , "/clear"]
+var allCommand = ["/img ", "/video ", "/music" , "/help" , "/list" , "/create ", "/join " , "/quit " , "/delete " , "/users" , "/msg " , "/clear"]
 
 
 //audio
@@ -439,16 +439,21 @@ class App extends React.Component {
                     {el.name}
                   </Typography>
                   ): ("")}
-                  {el.content.indexOf("/img ") === 0 || el.content.indexOf("/video ") === 0 ? (
+                  {el.content.indexOf("/img ") === 0 || el.content.indexOf("/video ") === 0 || el.content.indexOf("/music ") === 0 ? (
                     el.content.indexOf("/img ") === 0 ? (
                       <Typography variant="body1" className="content">
                       <a href={el.content.slice(5)} target = "_blank" ><img id="imageChat" src={el.content.slice(5)} alt="Image" style={{color:"red", borderRadius:"2%"}} ></img></a>
                       </Typography>
-                    ) : (
+                    ) : ( el.content.indexOf("/video ") === 0 ? (
                       <Typography variant="body1" className="content">
                         <ReactPlayer url={el.content.slice(7)}  controls pip loop="true" muted="true" playing="true"/>
                       {/* <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red", borderRadius:"2%"}} ></source></video> */}
                       </Typography>
+                      ) : (
+                      <Typography variant="body1" className="content">
+                        <ReactPlayer url={el.content.slice(7)} controls pip loop="true"/>
+                      </Typography>
+                      )
                     )
                   ) : (
                       (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/.test(el.content)) ? (
