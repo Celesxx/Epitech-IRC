@@ -9,10 +9,13 @@ import BottomBar from './BottomBar.jsx';
 import NavBar from './navbar.jsx';
 import '../css/App.css';
 
+import ReactPlayer from 'react-player'
+
 var nick = false;
 var username;
 var channel = "..."
-// var allChannel = ""
+var allCommand = ["/img ", "/video " , "/help" , "/list" , "/create ", "/join " , "/quit " , "/delete " , "/users" , "/msg " , "/clear"]
+
 
 //audio
 var notif = new Audio('https://www.myinstants.com/media/sounds/msn-sound_HSi9ogM.mp3');
@@ -143,6 +146,8 @@ class App extends React.Component {
     {
       let key = event.key;
 
+      console.log(key)
+
       //teste l'input realisé
       if(key === "ArrowUp" && nick)
       {
@@ -155,6 +160,31 @@ class App extends React.Component {
         positionCommande >= commande.length - 1 ? (positionCommande = commande.length - 1) : (positionCommande++)
         let input = document.getElementsByClassName("MuiInputBase-input")[0]
         input.value = commande[positionCommande];
+      }
+      else if((key === "ArrowRight" || key === "Tab") && nick)
+      {
+        let nbSearch = 0
+        let input = document.getElementsByClassName("MuiInputBase-input")[0]
+        let autoCompletion = input.value
+        for (let i = 0; i < allCommand.length; i++) {
+            if(allCommand[i].indexOf(input.value) == 0 )
+            {
+                
+              autoCompletion = allCommand[i]
+            }
+            else
+            {
+                nbSearch++
+            }
+
+            if(nbSearch == (allCommand.length - 1))
+            {
+              // console.log("nbSearch " + nbSearch)
+              // console.log("allCommand.length " + allCommand.length)
+              // console.log("autoCompletion " + autoCompletion)
+              input.value = autoCompletion;
+            }
+        }
       }
     
     });
@@ -418,7 +448,8 @@ class App extends React.Component {
                       </Typography>
                     ) : (
                       <Typography variant="body1" className="content">
-                      <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red", borderRadius:"2%"}} ></source></video>
+                        <ReactPlayer url={el.content.slice(7)}  controls pip loop="true" muted="true" playing="true"/>
+                      {/* <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red", borderRadius:"2%"}} ></source></video> */}
                       </Typography>
                     )
                   ) : (

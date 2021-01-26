@@ -45,9 +45,9 @@ const useDefaultStyles = makeStyles(theme => ({
   },
 }));
 
-
 export default function BottomBar(props) {
   const classes = useDefaultStyles();
+
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <p class="typing" style={{paddingLeft:"4.3%", marginTop:"3px", fontSize:"80%", marginBottom:"-0.5%"}} >{props.typing}</p>

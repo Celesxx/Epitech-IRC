@@ -7,7 +7,6 @@ let NavBar
 export default NavBar = ({channel,channelActuel}) => {
 
   // render ()
-  console.log(channel)
   {
     return(
       channel != null ? (
