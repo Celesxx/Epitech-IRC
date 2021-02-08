@@ -14,20 +14,38 @@ export default NavBar = ({channel,channelActuel}) => {
         <div class="area"></div>
         <nav class="menu">
                 <ul>
-                    <li>
-                        <a>
-                            <i class="fa fa-home fa-2x"></i>
-                            <span class="nav-text">
-                            <Link to="/">{channelActuel}</Link>
-                            </span>
-                        </a>
-                    </li>
+                {(() => {
+                    const channel = [];
+
+                    for (let i = 0; i < channelActuel.length; i++) {
+                      channel.push(
+                        <li>
+                          <a>
+                              <i class="fa fa-home fa-2x"></i>
+                              <span class="nav-text">
+                              <Link to="/">{channelActuel[i]}</Link>
+                              </span>
+                          </a>
+                      </li>
+                        );
+                    }
+
+                    return channel;
+                    })()}
+
                     {(() => {
                       const channelDispo = [];
-
                       for (let i = 0; i < channel.length; i++) {
+                        let existe = false;
+                        for (let j = 0; j < channelActuel.length; j++) {
+                            if(channel[i] == channelActuel[j])
+                            {
+                              existe = true
+                            }
+                        }
+
                         channelDispo.push(
-                          channel[i] != channelActuel ? ( <li><a><i class="fa fa-pencil fa-2x"></i><span class="nav-text"> {channel[i]}</span></a></li> ) : ("")
+                          existe ? ("") : (<li><a><i class="fa fa-pencil fa-2x"></i><span class="nav-text"> {channel[i]}</span></a></li>)
                         )
                       }
 

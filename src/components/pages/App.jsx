@@ -13,7 +13,7 @@ import ReactPlayer from 'react-player'
 
 var nick = false;
 var username;
-var channel = "..."
+var channel = ["..."]
 var allCommand = ["/img ", "/video ", "/music" , "/help" , "/list" , "/create ", "/join " , "/quit " , "/delete " , "/users" , "/msg " , "/clear"]
 
 
@@ -67,6 +67,20 @@ class App extends React.Component {
         chat: [...state.chat, ...msgReversed],
       }), 
       this.scrollToBottom);
+
+
+      if(channel.length == 0)
+      {
+        this.setState((state) => 
+      ({
+        chat: [..."", ...""],
+      }), 
+      this.scrollToBottom);
+
+        // channel.push("general")
+        this.displayMessage("information","Vous êtes déconnecté de tous les channels",'/join general')
+      }
+
     });
 
 
@@ -236,10 +250,16 @@ class App extends React.Component {
     }
   }
 
+
+  ifcontent()
+  {
+    
+  }
+
   // Updates the typing event
   updateTyping = () => {
     if (nick) {
-      if (!(this.typing) && channel === "general") {
+      if (!(this.typing) && channel.length === 0 && channel[0] === "general") {
         this.socket.emit('typing');
         isTyping = true;
       }
@@ -265,7 +285,7 @@ class App extends React.Component {
       {
         nick = true
         username = this.state.content.slice(6)
-        channel = "general"
+        channel = ["general"]
   
         // envoie le message au server
         this.socket.emit('add user', username);
@@ -299,9 +319,9 @@ class App extends React.Component {
     {
       if(this.state.listChannel.includes(this.state.content.slice(8)))
       {
-        if(channel == this.state.content.slice(8))
+        if(channel.indexOf(this.state.content.slice(8)) > -1)
         {
-          channel = "general"
+          // channel = "general"
           this.socket.emit('general', {content:"/quit " + this.state.content.slice(8) });
           return true
         }
@@ -340,8 +360,18 @@ class App extends React.Component {
     {
       this.displayMessage(username,this.state.content,'')
       
-      channel = "general"
+      var index = channel.indexOf(this.state.content.slice(6));
+      if (index > -1) {
+          // socket.room.splice(index, 1);
+          channel.splice(index, 1);
+      }
+
+      console.log(channel)
+
+      // channel = "general"
+
       this.socket.emit('general', {content:this.state.content });
+
       return true
     }
     else if(this.state.content === "jeb_")
@@ -372,7 +402,7 @@ class App extends React.Component {
   {
     if(this.state.listChannel.includes(this.state.content.slice(6)))
     {
-      channel = this.state.content.slice(6)
+      channel.push(this.state.content.slice(6));
       this.setState((state) => 
       ({
         chat: [],
@@ -446,7 +476,8 @@ class App extends React.Component {
                       </Typography>
                     ) : ( el.content.indexOf("/video ") === 0 ? (
                       <Typography variant="body1" className="content">
-                        <ReactPlayer url={el.content.slice(7)}  controls pip loop="true" muted="true" playing="true"/>
+                        <ReactPlayer className='react-player' width="57vw" height="35vw" url={el.content.slice(7)}  controls pip loop="true" muted="true" playing="true"/>
+                        
                       {/* <video id="videoChat" controls muted autoplay="" loop name="media"><source src={el.content.slice(7)} alt="Video" style={{color:"red", borderRadius:"2%"}} ></source></video> */}
                       </Typography>
                       ) : (

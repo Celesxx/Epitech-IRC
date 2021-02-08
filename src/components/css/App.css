@@ -38,9 +38,10 @@
   width: 60vh;
 }
 
-#videoChat{
+.videoChat{
   width: 60vh;
 }
+
 
 @media only screen and (max-device-width:680px) {
   #imageChat{
@@ -84,7 +85,7 @@
     width: 30vh;
   }
   
-  #videoChat{
+  .videoChat{
     width: 30vh;
   }
 
